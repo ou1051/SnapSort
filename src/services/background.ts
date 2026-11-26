@@ -1,5 +1,6 @@
 import * as BackgroundTask from 'expo-background-task';
 import * as TaskManager from 'expo-task-manager';
+import { IS_DEMO } from './demo';
 import { flushSave, sync } from './store';
 
 /**
@@ -12,7 +13,7 @@ import { flushSave, sync } from './store';
 export const BACKGROUND_TASK = 'snapsort-background-refresh';
 
 // Must be defined at module scope so the OS can run it without the UI.
-TaskManager.defineTask(BACKGROUND_TASK, async () => {
+if (!IS_DEMO) TaskManager.defineTask(BACKGROUND_TASK, async () => {
   try {
     await sync({ budget: { maxLocal: 40, maxAi: 10, deadline: Date.now() + 20_000 } });
     await flushSave();
@@ -24,6 +25,7 @@ TaskManager.defineTask(BACKGROUND_TASK, async () => {
 });
 
 export async function registerBackgroundRefresh(): Promise<void> {
+  if (IS_DEMO) return;
   try {
     const status = await BackgroundTask.getStatusAsync();
     if (status !== BackgroundTask.BackgroundTaskStatus.Available) return;

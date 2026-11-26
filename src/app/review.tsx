@@ -96,7 +96,9 @@ export default function Review() {
 
   const onDelete = () => {
     // iOS and Android 11+ show their own confirmation dialog. Older Android does not.
-    const systemConfirms = Platform.OS === 'ios' || (Platform.OS === 'android' && Number(Platform.Version) >= 30);
+    // (The browser demo has no dialogs, so it deletes straight away.)
+    const systemConfirms =
+      Platform.OS === 'ios' || Platform.OS === 'web' || (Platform.OS === 'android' && Number(Platform.Version) >= 30);
     if (systemConfirms) {
       void runDelete();
       return;

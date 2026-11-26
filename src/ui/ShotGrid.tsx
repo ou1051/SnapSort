@@ -3,6 +3,7 @@ import { memo, type ReactElement } from 'react';
 import { FlatList, Pressable, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
 import type { ShotRecord } from '../core/types';
 import { t } from '../i18n';
+import { imageUri } from '../services/demo';
 import { colors } from './theme';
 
 const COLUMNS = 3;
@@ -29,7 +30,7 @@ export const Thumb = memo(function Thumb({ record, size, selected, selectable, o
       style={{ width: size, height: size * 1.6, marginRight: GAP, marginBottom: GAP }}
     >
       <Image
-        source={{ uri: record.id }}
+        source={{ uri: imageUri(record.id) }}
         recyclingKey={record.id}
         style={StyleSheet.absoluteFill}
         contentFit="cover"

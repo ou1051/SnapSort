@@ -8,6 +8,7 @@ import { t } from '../i18n';
 // Importing this module also defines the background task (must happen at startup).
 import { registerBackgroundRefresh } from '../services/background';
 import { configureNotifications } from '../services/notifications';
+import { IS_DEMO } from '../services/demo';
 import { watchLibrary } from '../services/library';
 import { flushSave, init, pauseWork, resumeWork, sync } from '../services/store';
 import { colors } from '../ui/theme';
@@ -41,12 +42,15 @@ export default function RootLayout() {
     const stopWatching = watchLibrary(() => void sync());
 
     // Tapping the weekly reminder opens the review screen.
-    openFromNotification(Notifications.getLastNotificationResponse());
-    const tapSub = Notifications.addNotificationResponseReceivedListener(openFromNotification);
+    let tapSub: { remove: () => void } | null = null;
+    if (!IS_DEMO) {
+      openFromNotification(Notifications.getLastNotificationResponse());
+      tapSub = Notifications.addNotificationResponseReceivedListener(openFromNotification);
+    }
 
     return () => {
       appState.remove();
-      tapSub.remove();
+      tapSub?.remove();
       stopWatching();
     };
   }, []);

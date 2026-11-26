@@ -1,4 +1,5 @@
 import { File, Paths } from 'expo-file-system';
+import { IS_DEMO } from './demo';
 
 /**
  * Tiny JSON-file persistence in the app's document folder.
@@ -9,6 +10,7 @@ import { File, Paths } from 'expo-file-system';
  */
 
 export async function readJson<T>(name: string, fallback: T): Promise<T> {
+  if (IS_DEMO) return fallback; // the browser demo starts fresh on every load
   try {
     const file = new File(Paths.document, name);
     if (!file.exists) return fallback;
@@ -20,6 +22,7 @@ export async function readJson<T>(name: string, fallback: T): Promise<T> {
 }
 
 export async function writeJson(name: string, value: unknown): Promise<void> {
+  if (IS_DEMO) return;
   const target = new File(Paths.document, name);
   const tmp = new File(Paths.document, `${name}.tmp`);
   try {

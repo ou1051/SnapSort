@@ -10,7 +10,9 @@
     "ios": {
       "supportsTablet": false,
       "bundleIdentifier": "com.ou1051.snapsort",
-      "config": { "usesNonExemptEncryption": false }
+      "config": {
+        "usesNonExemptEncryption": false
+      }
     },
     "android": {
       "package": "com.ou1051.snapsort",
@@ -20,20 +22,33 @@
         "backgroundImage": "./assets/android-icon-background.png",
         "monochromeImage": "./assets/android-icon-monochrome.png"
       },
-      "blockedPermissions": ["android.permission.CAMERA", "android.permission.RECORD_AUDIO"],
+      "blockedPermissions": [
+        "android.permission.CAMERA",
+        "android.permission.RECORD_AUDIO"
+      ],
       "predictiveBackGestureEnabled": false
     },
     "locales": {
       "ja": "./locales/ja.json"
     },
     "plugins": [
-      "expo-router",
+      [
+        "expo-router",
+        {
+          "asyncRoutes": {
+            "web": false
+          },
+          "sitemap": false
+        }
+      ],
       [
         "expo-media-library",
         {
           "photosPermission": "SnapSort reads your screenshots to sort them and find ones you no longer need.",
           "savePhotosPermission": false,
-          "granularPermissions": ["photo"]
+          "granularPermissions": [
+            "photo"
+          ]
         }
       ],
       [
@@ -47,7 +62,9 @@
       ],
       [
         "expo-notifications",
-        { "color": "#1C1B19" }
+        {
+          "color": "#1C1B19"
+        }
       ],
       "expo-background-task",
       "expo-secure-store",
@@ -56,6 +73,11 @@
     ],
     "experiments": {
       "typedRoutes": false
+    },
+    "web": {
+      "output": "single",
+      "favicon": "./assets/favicon.png",
+      "bundler": "metro"
     }
   }
 }

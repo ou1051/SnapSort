@@ -16,6 +16,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { CATEGORIES, CATEGORY_IDS } from '../core/categories';
 import type { CleanupStrength } from '../core/types';
 import { categoryLabel, t } from '../i18n';
+import { IS_DEMO } from '../services/demo';
 import { requestNotificationPermission } from '../services/notifications';
 import { reanalyzeAll, saveApiKey, updateSettings, useAppState } from '../services/store';
 import { Button } from '../ui/Button';
@@ -98,7 +99,8 @@ export default function SettingsScreen() {
           </View>
           <Text style={[type.small, styles.explain]}>{t.aiToggleSub}</Text>
 
-          {s.settings.aiEnabled && (
+          {IS_DEMO && <Text style={[type.small, styles.explain]}>{t.demoAiNote}</Text>}
+          {s.settings.aiEnabled && !IS_DEMO && (
             <View style={[styles.keyBox, styles.line]}>
               <Text style={type.body}>{t.apiKey}</Text>
               {s.hasApiKey && s.aiProblem !== 'key' ? (

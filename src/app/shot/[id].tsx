@@ -8,6 +8,7 @@ import { CATEGORIES, CATEGORY_IDS, type CategoryOrUnsorted } from '../../core/ca
 import { isExpired } from '../../core/cleanup';
 import { formatBytes } from '../../core/format';
 import { categoryLabel, formatDate, t } from '../../i18n';
+import { imageUri } from '../../services/demo';
 import { deleteShots, markViewed, setCategory, setPinned, useAppState } from '../../services/store';
 import { Button } from '../../ui/Button';
 import { card, colors, space, type } from '../../ui/theme';
@@ -63,7 +64,7 @@ export default function ShotScreen() {
       <Stack.Screen options={{ title: r.title ?? '' }} />
       <ScrollView contentContainerStyle={{ paddingBottom: insets.bottom + space.xl }}>
         <Image
-          source={{ uri: r.id }}
+          source={{ uri: imageUri(r.id) }}
           style={[styles.image, { aspectRatio: r.width && r.height ? r.width / r.height : 9 / 19.5 }]}
           contentFit="contain"
           transition={150}

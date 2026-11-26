@@ -1,5 +1,6 @@
 import * as SecureStore from 'expo-secure-store';
 import type { CleanupStrength } from '../core/types';
+import { IS_DEMO } from './demo';
 import { readJson, writeJson } from './persist';
 
 export type Settings = {
@@ -14,7 +15,7 @@ export type Settings = {
 };
 
 export const DEFAULT_SETTINGS: Settings = {
-  aiEnabled: false,
+  aiEnabled: IS_DEMO,
   strength: 'standard',
   weeklyReminder: true,
   reminderWeekday: 1,
@@ -34,6 +35,7 @@ export async function saveSettings(settings: Settings): Promise<void> {
 }
 
 export async function getApiKey(): Promise<string | null> {
+  if (IS_DEMO) return 'demo';
   try {
     return await SecureStore.getItemAsync(KEY_NAME);
   } catch {
@@ -42,6 +44,7 @@ export async function getApiKey(): Promise<string | null> {
 }
 
 export async function setApiKey(key: string | null): Promise<void> {
+  if (IS_DEMO) return;
   if (key && key.trim()) {
     await SecureStore.setItemAsync(KEY_NAME, key.trim(), {
       // Readable by the background task after the first unlock.

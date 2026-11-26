@@ -5,6 +5,7 @@ import { isWorthNotifying, type CleanupSummary } from '../core/cleanup';
 import { formatBytes } from '../core/format';
 import { nextWeeklyTime } from '../core/schedule';
 import { t } from '../i18n';
+import { IS_DEMO } from './demo';
 import type { Settings } from './settings';
 
 const DIGEST_ID = 'snapsort-weekly-digest';
@@ -13,7 +14,7 @@ const CHANNEL_ID = 'cleanup';
 let configured = false;
 
 export async function configureNotifications(): Promise<void> {
-  if (configured) return;
+  if (configured || IS_DEMO) return;
   configured = true;
   Notifications.setNotificationHandler({
     handleNotification: async () => ({
@@ -32,11 +33,13 @@ export async function configureNotifications(): Promise<void> {
 }
 
 export async function notificationsAllowed(): Promise<boolean> {
+  if (IS_DEMO) return true;
   const { granted } = await Notifications.getPermissionsAsync();
   return granted;
 }
 
 export async function requestNotificationPermission(): Promise<boolean> {
+  if (IS_DEMO) return true;
   const current = await Notifications.getPermissionsAsync();
   if (current.granted) return true;
   if (!current.canAskAgain) return false;
@@ -50,6 +53,7 @@ export async function requestNotificationPermission(): Promise<boolean> {
  * background task, so the text is always close to the truth.
  */
 export async function refreshWeeklyReminder(summary: CleanupSummary, settings: Settings): Promise<void> {
+  if (IS_DEMO) return;
   try {
     await Notifications.cancelScheduledNotificationAsync(DIGEST_ID);
   } catch {

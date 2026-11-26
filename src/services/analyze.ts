@@ -15,6 +15,7 @@ import {
 import { localDateString } from '../core/cleanup';
 import { base64ToBytes, dhashFromRgba, HASH_H, HASH_W } from '../core/dhash';
 import type { AiResult } from '../core/types';
+import { IS_DEMO, demoAi, demoLocal, sleep } from './demo';
 import { getFileUri } from './library';
 
 /**
@@ -94,6 +95,10 @@ async function readSizeWithFallback(id: string, uri: string): Promise<number | n
 }
 
 export async function analyzeLocally(id: string, needShape: boolean): Promise<LocalAnalysis> {
+  if (IS_DEMO) {
+    await sleep(60);
+    return demoLocal(id);
+  }
   const uri = await readableUri(id);
   const [bytes, hasCode, dhash, shape] = await Promise.all([
     readSizeWithFallback(id, uri),
@@ -144,6 +149,11 @@ export async function classifyWithAi(params: {
   apiKey: string;
   language: AiLanguage;
 }): Promise<AiResult> {
+  if (IS_DEMO) {
+    // The demo shows what the AI returns for these samples, without a network call.
+    await sleep(220);
+    return demoAi(params.id);
+  }
   const imageBase64 = await prepareImageForAi(params.id, params.width, params.height);
   const body = buildRequestBody({
     imageBase64,

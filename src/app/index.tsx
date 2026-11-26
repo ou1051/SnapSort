@@ -1,11 +1,12 @@
 import { Link, Stack, router } from 'expo-router';
 import { useMemo, useState } from 'react';
-import { ActivityIndicator, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
+import { ActivityIndicator, Platform, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 import { CATEGORIES, CATEGORY_IDS, type CategoryOrUnsorted } from '../core/categories';
 import { formatBytes } from '../core/format';
 import { matchesQuery } from '../core/merge';
 import type { ShotRecord } from '../core/types';
 import { categoryLabel, t } from '../i18n';
+import { IS_DEMO } from '../services/demo';
 import { presentLimitedPicker } from '../services/library';
 import { getSummary, useAppState } from '../services/store';
 import { Button } from '../ui/Button';
@@ -112,6 +113,7 @@ export default function Home() {
     <>
       <Stack.Screen options={{ headerShown: true, headerRight: () => settingsButton }} />
       <ScrollView contentContainerStyle={styles.pad} contentInsetAdjustmentBehavior="automatic">
+        {IS_DEMO && <View style={styles.demo}><Notice text={t.demoBanner} /></View>}
         {search}
 
         {/* The one thing that matters: how much can go, and one button to review it. */}
@@ -189,8 +191,9 @@ function Notice({ text, action, onPress }: { text: string; action?: string; onPr
 
 const styles = StyleSheet.create({
   center: { flex: 1, alignItems: 'center', justifyContent: 'center' },
+  demo: { marginTop: -space.m, marginBottom: space.l },
   pad: { padding: space.l, paddingBottom: space.xxl },
-  headerLink: { fontSize: 16, color: colors.text, fontWeight: '500' },
+  headerLink: { fontSize: 16, color: colors.text, fontWeight: '500', marginRight: Platform.OS === 'web' ? space.l : 0 },
   search: {
     backgroundColor: colors.card,
     borderRadius: 12,

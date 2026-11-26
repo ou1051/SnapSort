@@ -59,7 +59,17 @@ Neither iOS nor Android tells apps when you last *looked* at a photo. SnapSort t
 
 ---
 
-## Running it
+## Try it in the browser
+
+There is a browser demo that runs the real app code on 20 sample screenshots (no photo access, no API key, nothing leaves the page):
+
+- **GitHub Pages:** https://ou1051.github.io/SnapSort/ (one-time setup: *Settings → Pages → Source: GitHub Actions*; every push then redeploys it)
+- Locally: `npx expo start --web`
+- As one self-contained HTML file: `npm run build:demo` → `dist-demo/index.html`
+
+The demo lives in `src/services/demo.ts`; on the web the photo library, analysis and AI calls are swapped for these samples, and everything else is unchanged.
+
+## Running it on your phone
 
 SnapSort uses native modules (photo library, ML Kit barcode scanning, background tasks), so it needs a **development build**; Expo Go is not enough.
 

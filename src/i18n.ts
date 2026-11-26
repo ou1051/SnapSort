@@ -123,6 +123,8 @@ const ja = {
   notifChannel: '片付けのお知らせ',
   cancel: 'キャンセル',
   done: '完了',
+  demoBanner: 'ブラウザ版デモ：サンプルのスクショ20枚で動いています。削除しても実際の写真には影響しません。再読み込みで元に戻ります。',
+  demoAiNote: 'デモでは、AIの判定結果をあらかじめ用意しています（APIキー不要）。',
 };
 
 type Strings = typeof ja;
@@ -226,6 +228,8 @@ const en: Strings = {
   notifChannel: 'Cleanup reminders',
   cancel: 'Cancel',
   done: 'Done',
+  demoBanner: 'Browser demo: running on 20 sample screenshots. Deleting here touches no real photos. Reload to start over.',
+  demoAiNote: 'In the demo the AI results are prepared in advance (no API key needed).',
 };
 
 export const t: Strings = lang === 'ja' ? ja : en;

@@ -43,8 +43,10 @@
     "ios": "expo run:ios",
     "test": "vitest run",
     "typecheck": "tsc --noEmit",
-    "lint": "expo lint"
+    "lint": "expo lint",
+    "web": "expo start --web",
+    "build:demo": "expo export --platform web --output-dir dist && node scripts/build-demo-html.mjs dist-demo/index.html"
   },
   "private": true,
-  "description": "SnapSort – sorts your phone screenshots automatically and tells you which ones can go."
+  "description": "SnapSort \u2013 sorts your phone screenshots automatically and tells you which ones can go."
 }
