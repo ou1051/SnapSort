@@ -12,6 +12,8 @@ export type Settings = {
   /** 1 = Sunday … 7 = Saturday (expo-notifications convention). */
   reminderWeekday: number;
   reminderHour: number;
+  /** n8n webhook that classifies screenshots. When set, it is used instead of calling Claude directly. */
+  n8nUrl: string;
 };
 
 export const DEFAULT_SETTINGS: Settings = {
@@ -20,6 +22,7 @@ export const DEFAULT_SETTINGS: Settings = {
   weeklyReminder: true,
   reminderWeekday: 1,
   reminderHour: 19,
+  n8nUrl: '',
 };
 
 const FILE = 'settings.json';

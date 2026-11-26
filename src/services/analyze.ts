@@ -7,9 +7,11 @@ import UPNG from 'upng-js';
 import {
   AI_API_VERSION,
   AI_ENDPOINT,
+  buildN8nPayload,
   buildRequestBody,
   describeHttpError,
   parseAiResponse,
+  parseN8nResponse,
   type AiLanguage,
 } from '../core/ai';
 import { localDateString } from '../core/cleanup';
@@ -146,7 +148,8 @@ export async function classifyWithAi(params: {
   id: string;
   width: number;
   height: number;
-  apiKey: string;
+  apiKey: string | null;
+  n8nUrl: string;
   language: AiLanguage;
 }): Promise<AiResult> {
   if (IS_DEMO) {
@@ -155,24 +158,44 @@ export async function classifyWithAi(params: {
     return demoAi(params.id);
   }
   const imageBase64 = await prepareImageForAi(params.id, params.width, params.height);
+  const today = localDateString(Date.now());
+
+  // Preferred: an n8n workflow does the AI call (the key stays on the server).
+  if (params.n8nUrl) {
+    const json = await postJson(params.n8nUrl, buildN8nPayload({ imageBase64, mediaType: 'image/jpeg', language: params.language, today }), {});
+    return parseOrThrow(() => parseN8nResponse(json));
+  }
+  if (!params.apiKey) throw new AiError('invalid_key');
+
   const body = buildRequestBody({
     imageBase64,
     mediaType: 'image/jpeg',
     language: params.language,
-    today: localDateString(Date.now()),
+    today,
   });
+  const json = await postJson(AI_ENDPOINT, body, {
+    'x-api-key': params.apiKey,
+    'anthropic-version': AI_API_VERSION,
+  });
+  return parseOrThrow(() => parseAiResponse(json));
+}
 
+function parseOrThrow(parse: () => AiResult): AiResult {
+  try {
+    return parse();
+  } catch (e) {
+    throw new AiError(e instanceof Error ? e.message : 'bad_response');
+  }
+}
+
+async function postJson(url: string, body: unknown, headers: Record<string, string>): Promise<unknown> {
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), 45_000);
   let response: Response;
   try {
-    response = await fetch(AI_ENDPOINT, {
+    response = await fetch(url, {
       method: 'POST',
-      headers: {
-        'content-type': 'application/json',
-        'x-api-key': params.apiKey,
-        'anthropic-version': AI_API_VERSION,
-      },
+      headers: { 'content-type': 'application/json', ...headers },
       body: JSON.stringify(body),
       signal: controller.signal,
     });
@@ -189,9 +212,5 @@ export async function classifyWithAi(params: {
     // fall through with null body
   }
   if (!response.ok) throw new AiError(describeHttpError(response.status, json));
-  try {
-    return parseAiResponse(json);
-  } catch (e) {
-    throw new AiError(e instanceof Error ? e.message : 'bad_response');
-  }
+  return json;
 }

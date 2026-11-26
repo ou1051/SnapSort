@@ -28,6 +28,7 @@ export default function SettingsScreen() {
   const s = useAppState();
   const insets = useSafeAreaInsets();
   const [keyDraft, setKeyDraft] = useState('');
+  const [urlDraft, setUrlDraft] = useState(s.settings.n8nUrl);
   const [notifBlocked, setNotifBlocked] = useState(false);
 
   const toggleReminder = async (on: boolean) => {
@@ -78,7 +79,7 @@ export default function SettingsScreen() {
               <Text style={type.body}>{t.weeklyReminder}</Text>
               <Text style={type.small}>{t.weeklyReminderSub}</Text>
             </View>
-            <Switch value={s.settings.weeklyReminder} onValueChange={(v) => void toggleReminder(v)} />
+            <Switch trackColor={{ true: colors.text, false: colors.line }} thumbColor="#FFFFFF" value={s.settings.weeklyReminder} onValueChange={(v) => void toggleReminder(v)} />
           </View>
           {notifBlocked && (
             <Pressable style={[styles.row, styles.line]} onPress={() => void Linking.openSettings()}>
@@ -95,13 +96,28 @@ export default function SettingsScreen() {
             <View style={styles.flex}>
               <Text style={type.body}>{t.aiToggle}</Text>
             </View>
-            <Switch value={s.settings.aiEnabled} onValueChange={(v) => void updateSettings({ aiEnabled: v })} />
+            <Switch trackColor={{ true: colors.text, false: colors.line }} thumbColor="#FFFFFF" value={s.settings.aiEnabled} onValueChange={(v) => void updateSettings({ aiEnabled: v })} />
           </View>
           <Text style={[type.small, styles.explain]}>{t.aiToggleSub}</Text>
 
           {IS_DEMO && <Text style={[type.small, styles.explain]}>{t.demoAiNote}</Text>}
           {s.settings.aiEnabled && !IS_DEMO && (
             <View style={[styles.keyBox, styles.line]}>
+              <Text style={type.body}>{t.n8nUrl}</Text>
+              <Text style={type.small}>{t.n8nHint}</Text>
+              <TextInput
+                value={urlDraft}
+                onChangeText={setUrlDraft}
+                onEndEditing={() => void updateSettings({ n8nUrl: urlDraft.trim() })}
+                onSubmitEditing={() => void updateSettings({ n8nUrl: urlDraft.trim() })}
+                placeholder="https://…/webhook/snapsort-classify"
+                placeholderTextColor={colors.faint}
+                autoCapitalize="none"
+                autoCorrect={false}
+                keyboardType="url"
+                style={styles.input}
+              />
+              <Text style={[type.small, styles.or]}>{t.orApiKey}</Text>
               <Text style={type.body}>{t.apiKey}</Text>
               {s.hasApiKey && s.aiProblem !== 'key' ? (
                 <View style={styles.keyRow}>
@@ -183,5 +199,6 @@ const styles = StyleSheet.create({
     backgroundColor: colors.bg,
   },
   link: { color: colors.selected, fontSize: 15, fontWeight: '600' },
+  or: { marginTop: space.s },
   dot: { width: 10, height: 10, borderRadius: 5 },
 });

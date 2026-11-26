@@ -159,7 +159,7 @@ function decodeURIComponentSafe(v: string | undefined): string {
 const styles = StyleSheet.create({
   flex: { flex: 1 },
   center: { flex: 1, alignItems: 'center', justifyContent: 'center' },
-  image: { width: '100%', maxHeight: 560, backgroundColor: '#EDEBE6' },
+  image: { width: '100%', maxHeight: 560, backgroundColor: colors.soft },
   body: { padding: space.l, gap: space.s },
   chips: { flexDirection: 'row', flexWrap: 'wrap', gap: space.s, marginVertical: space.xs },
   chip: {
@@ -174,7 +174,7 @@ const styles = StyleSheet.create({
   chipText: { fontSize: 15, fontWeight: '600', color: colors.text },
   chipEdit: { fontSize: 13, color: colors.sub },
   dot: { width: 10, height: 10, borderRadius: 5, marginRight: 8 },
-  badge: { borderRadius: 20, paddingHorizontal: 12, paddingVertical: 7, backgroundColor: colors.line },
+  badge: { borderRadius: 20, paddingHorizontal: 12, paddingVertical: 7, backgroundColor: colors.soft },
   badgeText: { fontSize: 13, color: colors.text },
   actions: { flexDirection: 'row', gap: space.m, marginTop: space.l },
   backdrop: { flex: 1, backgroundColor: 'rgba(0,0,0,0.35)', justifyContent: 'flex-end', padding: space.l },

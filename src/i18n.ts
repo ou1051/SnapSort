@@ -102,6 +102,9 @@ const ja = {
   aiToggle: 'AIで内容を読み取る',
   aiToggleSub:
     'スクショを縮小してAnthropicのClaude APIに送り、種類・タイトル・期限を判定します。オフでも端末内で、バーコード検出・重複検出・アプリ名からの仕分けは動きます。',
+  n8nUrl: 'n8n Webhook URL（おすすめ）',
+  n8nHint: 'n8nのワークフローがAI判定を行います。APIキーはスマホに置かずに済みます。',
+  orApiKey: 'または、Claude APIキーを直接使う',
   apiKey: 'Claude APIキー',
   apiKeyPlaceholder: 'sk-ant-…',
   apiKeySaved: '保存済み',
@@ -208,6 +211,9 @@ const en: Strings = {
   aiToggle: 'Read screenshots with AI',
   aiToggleSub:
     'Sends a downscaled copy of each screenshot to Anthropic’s Claude API to find its kind, a title and any expiry date. Without it, barcode detection, duplicate detection and app-name sorting still run on your phone.',
+  n8nUrl: 'n8n webhook URL (recommended)',
+  n8nHint: 'An n8n workflow does the AI step, so no API key is stored on the phone.',
+  orApiKey: 'Or use a Claude API key directly',
   apiKey: 'Claude API key',
   apiKeyPlaceholder: 'sk-ant-…',
   apiKeySaved: 'Saved',

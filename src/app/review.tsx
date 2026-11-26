@@ -221,7 +221,7 @@ const styles = StyleSheet.create({
     borderTopWidth: StyleSheet.hairlineWidth,
     borderTopColor: colors.line,
   },
-  freed: { margin: space.l, marginBottom: 0, padding: space.l, borderRadius: 12, backgroundColor: '#E7F0D8' },
+  freed: { margin: space.l, marginBottom: 0, padding: space.l, borderRadius: 12, backgroundColor: colors.soft },
   freedText: { color: colors.ok, fontSize: 16, fontWeight: '600', textAlign: 'center' },
   empty: { flex: 1, padding: space.l, justifyContent: 'space-between' },
   emptyBody: { flex: 1, justifyContent: 'center', gap: space.s },

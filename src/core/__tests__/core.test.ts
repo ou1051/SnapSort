@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { appNameFromFilename, categoryFromFilename } from '../appHints';
-import { buildRequestBody, describeHttpError, isValidIsoDate, parseAiResponse } from '../ai';
+import { buildN8nPayload, buildRequestBody, describeHttpError, isValidIsoDate, parseAiResponse, parseN8nResponse } from '../ai';
 import {
   computeSuggestions,
   findDuplicates,
@@ -369,5 +369,26 @@ describe('merge', () => {
     expect(matchesQuery(r, '買い物', '商品・買い物')).toBe(true);
     expect(matchesQuery(r, 'apple', '')).toBe(false);
     expect(matchesQuery(r, '   ', '')).toBe(true);
+  });
+});
+
+
+
+describe('n8n', () => {
+  it('builds the webhook payload', () => {
+    expect(buildN8nPayload({ imageBase64: 'AA', mediaType: 'image/jpeg', language: 'en', today: '2026-11-26' })).toEqual({
+      image_base64: 'AA',
+      media_type: 'image/jpeg',
+      language: 'en',
+      today: '2026-11-26',
+    });
+  });
+  it('accepts plain, wrapped and array answers', () => {
+    const fields = { category: 'map', title: 'Route', keywords: 'a', expires_on: null, important: false };
+    const want = { category: 'map', title: 'Route', keywords: 'a', expiresOn: null, important: false };
+    expect(parseN8nResponse(fields)).toEqual(want);
+    expect(parseN8nResponse({ result: fields })).toEqual(want);
+    expect(parseN8nResponse([fields])).toEqual(want);
+    expect(() => parseN8nResponse({ message: 'Workflow was started' })).toThrow();
   });
 });

@@ -1,17 +1,19 @@
 import { StyleSheet } from 'react-native';
 
+// Black and white only, after Apple's system palette. No accent hues.
 export const colors = {
-  bg: '#F6F5F2',
+  bg: '#FFFFFF',
   card: '#FFFFFF',
-  text: '#1C1B19',
-  sub: '#6B6862',
-  faint: '#A8A49C',
-  line: '#E6E3DD',
-  accent: '#1C1B19',
-  danger: '#C2410C',
-  dangerSoft: '#FCEBDD',
-  ok: '#3F6212',
-  selected: '#2563EB',
+  text: '#1D1D1F',
+  sub: '#6E6E73',
+  faint: '#AEAEB2',
+  line: '#E5E5EA',
+  soft: '#F5F5F7',
+  accent: '#1D1D1F',
+  danger: '#1D1D1F',
+  dangerSoft: '#F5F5F7',
+  ok: '#1D1D1F',
+  selected: '#1D1D1F',
 };
 
 export const space = { xs: 4, s: 8, m: 12, l: 16, xl: 24, xxl: 32 };

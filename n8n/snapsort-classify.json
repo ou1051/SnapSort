@@ -1,0 +1,125 @@
+{
+  "name": "SnapSort – classify screenshot",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "snapsort-classify",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "a1",
+      "name": "Screenshot from SnapSort",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        0,
+        0
+      ],
+      "webhookId": "snapsort-classify"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.anthropic.com/v1/messages",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "anthropic-version",
+              "value": "2023-06-01"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({\n  model: 'claude-haiku-5-5',\n  max_tokens: 400,\n  system: [\n    'You sort phone screenshots for a storage-cleanup app.',\n    'Today is ' + $json.body.today + '. Use it to resolve dates that omit the year.',\n    'Call the tool exactly once.',\n    'Categories: ticket (boarding pass, train/event ticket, reservation), coupon (coupon, loyalty or payment code), shopping (product page, wish list), receipt (order confirmation, receipt, payment), chat (chat, social post), map (map, route, timetable), info (article, recipe, notes), tech (error, settings, code), other.',\n    'title: what it is, in ' + ($json.body.language === 'ja' ? 'Japanese' : 'English') + ', max 30 characters, name the shop/app/place if visible.',\n    'keywords: up to 12 searchable words. Never include passwords, card numbers or one-time codes.',\n    'expires_on: last useful day as YYYY-MM-DD, or null.',\n    'important: true only for IDs, contracts, warranties, tax or medical documents, recovery codes.'\n  ].join('\\n'),\n  tools: [{\n    name: 'record_screenshot',\n    description: 'Save the classification of one screenshot.',\n    input_schema: {\n      type: 'object',\n      properties: {\n        category: { type: 'string', enum: ['ticket','coupon','shopping','receipt','chat','map','info','tech','other'] },\n        title: { type: 'string' },\n        keywords: { type: 'string' },\n        expires_on: { type: ['string','null'] },\n        important: { type: 'boolean' }\n      },\n      required: ['category','title','keywords','expires_on','important']\n    }\n  }],\n  tool_choice: { type: 'tool', name: 'record_screenshot' },\n  messages: [{ role: 'user', content: [\n    { type: 'image', source: { type: 'base64', media_type: $json.body.media_type || 'image/jpeg', data: $json.body.image_base64 } },\n    { type: 'text', text: 'Classify this screenshot.' }\n  ]}]\n}) }}",
+        "options": {
+          "timeout": 45000
+        }
+      },
+      "id": "a2",
+      "name": "Claude reads the screenshot",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        260,
+        0
+      ],
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "",
+          "name": "Anthropic API (x-api-key)"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const res = $input.first().json;\nconst call = (res.content || []).find(c => c.type === 'tool_use');\nif (!call) throw new Error('Claude returned no classification');\nconst i = call.input;\nconst cats = ['ticket','coupon','shopping','receipt','chat','map','info','tech','other'];\nconst okDate = typeof i.expires_on === 'string' && /^\\d{4}-\\d{2}-\\d{2}$/.test(i.expires_on);\nreturn [{ json: {\n  category: cats.includes(i.category) ? i.category : 'other',\n  title: String(i.title || '').slice(0, 40),\n  keywords: String(i.keywords || '').slice(0, 200),\n  expires_on: okDate ? i.expires_on : null,\n  important: i.important === true,\n} }];"
+      },
+      "id": "a3",
+      "name": "Check the answer",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        520,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ $json }}",
+        "options": {}
+      },
+      "id": "a4",
+      "name": "Send result to SnapSort",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [
+        780,
+        0
+      ]
+    }
+  ],
+  "connections": {
+    "Screenshot from SnapSort": {
+      "main": [
+        [
+          {
+            "node": "Claude reads the screenshot",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Claude reads the screenshot": {
+      "main": [
+        [
+          {
+            "node": "Check the answer",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check the answer": {
+      "main": [
+        [
+          {
+            "node": "Send result to SnapSort",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  }
+}

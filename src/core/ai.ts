@@ -112,7 +112,15 @@ export function parseAiResponse(json: unknown): AiResult {
   if (!block || typeof block.input !== 'object' || block.input === null) {
     throw new AiResponseError('Model did not return a classification');
   }
-  const input = block.input;
+  return parseAiFields(block.input);
+}
+
+/**
+ * Validates the classification fields, wherever they came from: the Claude
+ * tool call above, or the JSON an n8n workflow answers with.
+ */
+export function parseAiFields(input: Record<string, unknown>): AiResult {
+  if (typeof input !== 'object' || input === null) throw new AiResponseError('No classification');
   return {
     category: isCategoryId(input.category) ? input.category : 'other',
     title: clip(input.title, 40),
@@ -129,4 +137,29 @@ export function describeHttpError(status: number, body: unknown): string {
   if (status === 429) return 'rate_limited';
   if (status === 529 || status >= 500) return 'server_busy';
   return apiMessage ? `http_${status}: ${apiMessage}` : `http_${status}`;
+}
+
+/** Body SnapSort posts to an n8n webhook (see n8n/snapsort-classify.json). */
+export function buildN8nPayload(params: {
+  imageBase64: string;
+  mediaType: 'image/jpeg' | 'image/png';
+  language: AiLanguage;
+  today: string;
+}) {
+  return {
+    image_base64: params.imageBase64,
+    media_type: params.mediaType,
+    language: params.language,
+    today: params.today,
+  };
+}
+
+/** n8n may answer with the fields directly, wrapped in { result }, or as a one-item array. */
+export function parseN8nResponse(json: unknown): AiResult {
+  let value: unknown = Array.isArray(json) ? json[0] : json;
+  if (value && typeof value === 'object' && 'result' in value) value = (value as { result: unknown }).result;
+  if (!value || typeof value !== 'object' || !('category' in value)) {
+    throw new AiResponseError('n8n answered without a category');
+  }
+  return parseAiFields(value as Record<string, unknown>);
 }

@@ -149,7 +149,7 @@ export default function Home() {
           <Notice text={t.aiErrorKey} action={t.fix} onPress={() => router.push('/settings')} />
         )}
         {s.settings.aiEnabled && s.aiProblem === 'other' && <Notice text={t.aiErrorOther} />}
-        {(!s.settings.aiEnabled || !s.hasApiKey) && all.length > 0 && (
+        {(!s.settings.aiEnabled || (!s.hasApiKey && !s.settings.n8nUrl)) && all.length > 0 && (
           <Notice text={t.aiOffHint} action={t.turnOn} onPress={() => router.push('/settings')} />
         )}
 

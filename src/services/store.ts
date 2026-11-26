@@ -314,7 +314,8 @@ async function runLocalPhase(budget: WorkBudget) {
 async function runAiPhase(budget: WorkBudget) {
   if (!state.settings.aiEnabled || state.aiProblem === 'key') return;
   const apiKey = await getApiKey();
-  if (!apiKey) return;
+  const n8nUrl = state.settings.n8nUrl.trim();
+  if (!apiKey && !n8nUrl) return;
 
   let todo = state.order.filter((id) => {
     const r = state.records[id];
@@ -336,7 +337,7 @@ async function runAiPhase(budget: WorkBudget) {
     if (!rec) return 'continue';
     for (let attempt = 0; attempt < 3; attempt++) {
       try {
-        const result = await classifyWithAi({ id, width: rec.width, height: rec.height, apiKey, language: lang });
+        const result = await classifyWithAi({ id, width: rec.width, height: rec.height, apiKey, n8nUrl, language: lang });
         const current = state.records[id];
         updateRecord(id, {
           // A category the user picked by hand always wins.
@@ -438,7 +439,10 @@ export async function updateSettings(patch: Partial<Settings>) {
   set({ settings });
   await saveSettings(settings);
   await refreshReminder();
-  if (patch.aiEnabled) void runQueue();
+  if (patch.aiEnabled || patch.n8nUrl) {
+    set({ aiProblem: null });
+    void runQueue();
+  }
 }
 
 export async function saveApiKey(key: string | null) {

@@ -59,6 +59,14 @@ Neither iOS nor Android tells apps when you last *looked* at a photo. SnapSort t
 
 ---
 
+## Demo video
+
+[docs/SnapSort-demo.mp4](docs/SnapSort-demo.mp4) (40 s, no sound)
+
+## Automation with n8n
+
+The AI step can run in n8n: import [`n8n/snapsort-classify.json`](n8n/), add your Anthropic key as a Header Auth credential, activate, and paste the webhook URL into **Settings → AI sorting → n8n webhook URL**. The phone then never holds an API key. Details in [n8n/README.md](n8n/README.md).
+
 ## Try it in the browser
 
 There is a browser demo that runs the real app code on 20 sample screenshots (no photo access, no API key, nothing leaves the page):
