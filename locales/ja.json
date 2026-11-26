@@ -1,0 +1,4 @@
+{
+  "CFBundleDisplayName": "SnapSort",
+  "NSPhotoLibraryUsageDescription": "スクリーンショットを種類ごとに仕分けし、もう要らなさそうなものを見つけるために使います。"
+}

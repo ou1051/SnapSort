@@ -1,0 +1,61 @@
+{
+  "expo": {
+    "name": "SnapSort",
+    "slug": "snapsort",
+    "scheme": "snapsort",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "light",
+    "ios": {
+      "supportsTablet": false,
+      "bundleIdentifier": "com.ou1051.snapsort",
+      "config": { "usesNonExemptEncryption": false }
+    },
+    "android": {
+      "package": "com.ou1051.snapsort",
+      "adaptiveIcon": {
+        "backgroundColor": "#F6F5F2",
+        "foregroundImage": "./assets/android-icon-foreground.png",
+        "backgroundImage": "./assets/android-icon-background.png",
+        "monochromeImage": "./assets/android-icon-monochrome.png"
+      },
+      "blockedPermissions": ["android.permission.CAMERA", "android.permission.RECORD_AUDIO"],
+      "predictiveBackGestureEnabled": false
+    },
+    "locales": {
+      "ja": "./locales/ja.json"
+    },
+    "plugins": [
+      "expo-router",
+      [
+        "expo-media-library",
+        {
+          "photosPermission": "SnapSort reads your screenshots to sort them and find ones you no longer need.",
+          "savePhotosPermission": false,
+          "granularPermissions": ["photo"]
+        }
+      ],
+      [
+        "expo-camera",
+        {
+          "cameraPermission": false,
+          "microphonePermission": false,
+          "recordAudioAndroid": false,
+          "barcodeScannerEnabled": true
+        }
+      ],
+      [
+        "expo-notifications",
+        { "color": "#1C1B19" }
+      ],
+      "expo-background-task",
+      "expo-secure-store",
+      "expo-localization",
+      "expo-image"
+    ],
+    "experiments": {
+      "typedRoutes": false
+    }
+  }
+}
