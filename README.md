@@ -61,7 +61,7 @@ Neither iOS nor Android tells apps when you last *looked* at a photo. SnapSort t
 
 ## Demo video
 
-[docs/SnapSort-demo.mp4](docs/SnapSort-demo.mp4) (40 s, no sound)
+[English](docs/SnapSort-demo-en.mp4) · [日本語](docs/SnapSort-demo.mp4) (about 40 s, no sound)
 
 ## Automation with n8n
 
