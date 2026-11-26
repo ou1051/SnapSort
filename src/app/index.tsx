@@ -6,7 +6,7 @@ import { formatBytes } from '../core/format';
 import { matchesQuery } from '../core/merge';
 import type { ShotRecord } from '../core/types';
 import { categoryLabel, t } from '../i18n';
-import { IS_DEMO } from '../services/demo';
+import { SHOW_DEMO_NOTICE } from '../services/demo';
 import { presentLimitedPicker } from '../services/library';
 import { getSummary, useAppState } from '../services/store';
 import { Button } from '../ui/Button';
@@ -85,20 +85,6 @@ export default function Home() {
     />
   );
 
-  if (query.trim()) {
-    return (
-      <>
-        <Stack.Screen options={{ headerShown: true, headerRight: () => settingsButton }} />
-        <ShotGrid
-          records={results}
-          onPress={(id) => router.push(`/shot/${encodeURIComponent(id)}`)}
-          header={<View style={styles.pad}>{search}</View>}
-          empty={<EmptyNote text={t.noResults} />}
-        />
-      </>
-    );
-  }
-
   const busy = s.phase !== 'idle';
   const progressText =
     s.phase === 'scanning'
@@ -109,12 +95,20 @@ export default function Home() {
           ? t.analyzingAi(s.progress.done, s.progress.total)
           : '';
 
+  // The search field stays mounted above both views, so typing never loses focus.
   return (
-    <>
+    <View style={styles.flex}>
       <Stack.Screen options={{ headerShown: true, headerRight: () => settingsButton }} />
-      <ScrollView contentContainerStyle={styles.pad} contentInsetAdjustmentBehavior="automatic">
-        {IS_DEMO && <View style={styles.demo}><Notice text={t.demoBanner} /></View>}
-        {search}
+      <View style={styles.searchBar}>{search}</View>
+      {query.trim() ? (
+        <ShotGrid
+          records={results}
+          onPress={(id) => router.push(`/shot/${encodeURIComponent(id)}`)}
+          empty={<EmptyNote text={t.noResults} />}
+        />
+      ) : (
+      <ScrollView contentContainerStyle={styles.pad} keyboardShouldPersistTaps="handled">
+        {SHOW_DEMO_NOTICE && <View style={styles.demo}><Notice text={t.demoBanner} /></View>}
 
         {/* The one thing that matters: how much can go, and one button to review it. */}
         <View style={[card, styles.hero]}>
@@ -172,7 +166,8 @@ export default function Home() {
           ))}
         </View>
       </ScrollView>
-    </>
+      )}
+    </View>
   );
 }
 
@@ -190,9 +185,11 @@ function Notice({ text, action, onPress }: { text: string; action?: string; onPr
 }
 
 const styles = StyleSheet.create({
+  flex: { flex: 1 },
   center: { flex: 1, alignItems: 'center', justifyContent: 'center' },
-  demo: { marginTop: -space.m, marginBottom: space.l },
-  pad: { padding: space.l, paddingBottom: space.xxl },
+  demo: { marginBottom: space.l },
+  searchBar: { paddingHorizontal: space.l, paddingTop: space.s, paddingBottom: space.s, backgroundColor: colors.bg },
+  pad: { paddingHorizontal: space.l, paddingTop: space.s, paddingBottom: space.xxl },
   headerLink: { fontSize: 16, color: colors.text, fontWeight: '500', marginRight: Platform.OS === 'web' ? space.l : 0 },
   search: {
     backgroundColor: colors.card,
@@ -203,7 +200,6 @@ const styles = StyleSheet.create({
     color: colors.text,
     borderWidth: StyleSheet.hairlineWidth,
     borderColor: colors.line,
-    marginBottom: space.l,
   },
   hero: { padding: space.xl },
   heroLabel: { marginTop: space.l, marginBottom: space.xs },

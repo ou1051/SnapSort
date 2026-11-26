@@ -11,6 +11,10 @@ import { lang } from '../i18n';
  */
 export const IS_DEMO = Platform.OS === 'web';
 
+/** Set by the promo-video recorder to hide the demo notice. */
+export const SHOW_DEMO_NOTICE =
+  IS_DEMO && !(typeof window !== 'undefined' && (window as unknown as { __SNAPSORT_VIDEO__?: boolean }).__SNAPSORT_VIDEO__);
+
 const DAY = 24 * 60 * 60 * 1000;
 const W = 1170;
 const H = 2532;

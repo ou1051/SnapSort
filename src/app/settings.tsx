@@ -24,6 +24,13 @@ import { card, colors, space, type } from '../ui/theme';
 
 const STRENGTHS: CleanupStrength[] = ['gentle', 'standard', 'tidy'];
 
+// Black and white switches on every platform (react-native-web reads the active* props).
+const switchColors = {
+  trackColor: { true: colors.text, false: colors.line },
+  thumbColor: '#FFFFFF',
+  ...(Platform.OS === 'web' ? { activeThumbColor: '#FFFFFF', activeTrackColor: colors.text } : {}),
+} as const;
+
 export default function SettingsScreen() {
   const s = useAppState();
   const insets = useSafeAreaInsets();
@@ -79,7 +86,7 @@ export default function SettingsScreen() {
               <Text style={type.body}>{t.weeklyReminder}</Text>
               <Text style={type.small}>{t.weeklyReminderSub}</Text>
             </View>
-            <Switch trackColor={{ true: colors.text, false: colors.line }} thumbColor="#FFFFFF" value={s.settings.weeklyReminder} onValueChange={(v) => void toggleReminder(v)} />
+            <Switch {...switchColors} value={s.settings.weeklyReminder} onValueChange={(v) => void toggleReminder(v)} />
           </View>
           {notifBlocked && (
             <Pressable style={[styles.row, styles.line]} onPress={() => void Linking.openSettings()}>
@@ -96,12 +103,12 @@ export default function SettingsScreen() {
             <View style={styles.flex}>
               <Text style={type.body}>{t.aiToggle}</Text>
             </View>
-            <Switch trackColor={{ true: colors.text, false: colors.line }} thumbColor="#FFFFFF" value={s.settings.aiEnabled} onValueChange={(v) => void updateSettings({ aiEnabled: v })} />
+            <Switch {...switchColors} value={s.settings.aiEnabled} onValueChange={(v) => void updateSettings({ aiEnabled: v })} />
           </View>
           <Text style={[type.small, styles.explain]}>{t.aiToggleSub}</Text>
 
           {IS_DEMO && <Text style={[type.small, styles.explain]}>{t.demoAiNote}</Text>}
-          {s.settings.aiEnabled && !IS_DEMO && (
+          {s.settings.aiEnabled && (
             <View style={[styles.keyBox, styles.line]}>
               <Text style={type.body}>{t.n8nUrl}</Text>
               <Text style={type.small}>{t.n8nHint}</Text>
@@ -117,9 +124,9 @@ export default function SettingsScreen() {
                 keyboardType="url"
                 style={styles.input}
               />
-              <Text style={[type.small, styles.or]}>{t.orApiKey}</Text>
-              <Text style={type.body}>{t.apiKey}</Text>
-              {s.hasApiKey && s.aiProblem !== 'key' ? (
+              {!IS_DEMO && <Text style={[type.small, styles.or]}>{t.orApiKey}</Text>}
+              {!IS_DEMO && <Text style={type.body}>{t.apiKey}</Text>}
+              {IS_DEMO ? null : s.hasApiKey && s.aiProblem !== 'key' ? (
                 <View style={styles.keyRow}>
                   <Text style={[type.sub, styles.flex]}>✓ {t.apiKeySaved}</Text>
                   <Pressable onPress={() => void saveApiKey(null)} hitSlop={8}>
